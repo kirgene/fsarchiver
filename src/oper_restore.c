@@ -74,12 +74,15 @@ int is_filedir_excluded(char *relpath)
     extract_basename(relpath, basename, sizeof(basename));
     
     if ((exclude_check(&g_options.exclude, basename)==true) // is filename excluded ?
-        || (exclude_check(&g_options.exclude, relpath)==true)) // is filepath excluded ?
+        || (exclude_check(&g_options.exclude, relpath)==true) // is filepath excluded ?
+        || (strlist_count(&g_options.include)
+            && (exclude_check(&g_options.include, basename)==false) // is filename not included ?
+            && (exclude_check(&g_options.include, relpath)==false))) // is filepath not included ?
     {
         msgprintf(MSG_VERB2, "file/dir=[%s] excluded because of its own name/path\n", relpath);
         return true;
     }
-    
+
     // check if that file belongs to a directory which has been excluded
     snprintf(dirpath, sizeof(dirpath), "%s", relpath);
     for (pos=0; dirpath[pos]; pos++); // go to the end of the string
@@ -95,7 +98,10 @@ int is_filedir_excluded(char *relpath)
         if (strlen(dirpath)>1 && strlen(basename)>0)
         {
             if ((exclude_check(&g_options.exclude, basename)==true)
-                || (exclude_check(&g_options.exclude, dirpath)==true))
+                || (exclude_check(&g_options.exclude, dirpath)==true)
+                || (strlist_count(&g_options.include)
+                    && (exclude_check(&g_options.include, basename)==false)
+                    && (exclude_check(&g_options.include, dirpath)==false)))
             {
                 msgprintf(MSG_VERB2, "file/dir=[%s] excluded because of its parent=[%s]\n", relpath, dirpath);
                 return true; // a parent directory is excluded

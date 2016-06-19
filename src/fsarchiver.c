@@ -72,6 +72,7 @@ void usage(char *progname, bool examples)
     msgprintf(MSG_FORCE, " -A: allow to save a filesystem which is mounted in read-write (live backup)\n");
     msgprintf(MSG_FORCE, " -a: allow running savefs when partition mounted without the acl/xattr options\n");
     msgprintf(MSG_FORCE, " -e <pattern>: exclude files and directories that match that pattern\n");
+    msgprintf(MSG_FORCE, " -i <pattern>: include files and directories that match that pattern\n");
     msgprintf(MSG_FORCE, " -L <label>: set the label of the archive (comment about the contents)\n");
     msgprintf(MSG_FORCE, " -z <level>: compression level from 1 (very fast)  to  9 (very good) default=3\n");
     msgprintf(MSG_FORCE, " -s <mbsize>: split the archive into several files of <mbsize> megabytes each\n");
@@ -134,6 +135,7 @@ static struct option const long_options[] =
     {"cryptpass", required_argument, NULL, 'c'},
     {"label", required_argument, NULL, 'L'},
     {"exclude", required_argument, NULL, 'e'},
+    {"include", required_argument, NULL, 'i'},
     {NULL, 0, NULL, 0}
 };
 
@@ -173,7 +175,7 @@ int process_cmdline(int argc, char **argv)
     snprintf(g_options.archlabel, sizeof(g_options.archlabel), "<none>");
     g_options.encryptpass[0]=0;
     
-    while ((c = getopt_long(argc, argv, "oaAvdz:j:hVs:c:L:e:", long_options, NULL)) != EOF)
+    while ((c = getopt_long(argc, argv, "oaAvdz:j:hVs:c:L:e:i:", long_options, NULL)) != EOF)
     {
         switch (c)
         {
@@ -206,6 +208,9 @@ int process_cmdline(int argc, char **argv)
                 break;
             case 'e': // exclude files/directories
                 strlist_add(&g_options.exclude, optarg);
+                break;
+            case 'i': // include files/directories
+                strlist_add(&g_options.include, optarg);
                 break;
             case 's': // split archive into several volumes
                 g_options.splitsize=((u64)atoll(optarg))*((u64)1024LL*1024LL);
