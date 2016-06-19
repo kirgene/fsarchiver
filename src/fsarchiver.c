@@ -136,6 +136,7 @@ static struct option const long_options[] =
     {"cryptpass", required_argument, NULL, 'c'},
     {"label", required_argument, NULL, 'L'},
     {"exclude", required_argument, NULL, 'e'},
+    {"include", required_argument, NULL, 'i'},
     {NULL, 0, NULL, 0}
 };
 
@@ -212,6 +213,9 @@ int process_cmdline(int argc, char **argv)
                 break;
             case 'e': // exclude files/directories
                 strlist_add(&g_options.exclude, optarg);
+                break;
+            case 'i': // include files/directories
+                strlist_add(&g_options.include, optarg);
                 break;
             case 's': // split archive into several volumes
                 g_options.splitsize=((u64)atoll(optarg))*((u64)1024LL*1024LL);
